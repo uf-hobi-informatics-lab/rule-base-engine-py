@@ -1,0 +1,42 @@
+// author: Buzhou Tang
+// email: buzhou.tang@vanderbilt.edu
+// date: 2012-06-12
+// This file contains rules for the temporal expressions of the type "DATE"
+// format: expression="",val="",mod=""
+// we follow the way of Heidel tool
+
+// Type of temporal expressions, do not forget it.
+DATE:
+
+/////////////////////
+// Day Granularity //
+/////////////////////
+// YEAR4-MONTH-DAY:2010-01-29 | 2010-1-1
+expression="%Year4Digit-%MonthNumber-%DayNumber",val="group(1)-%NormMonth(group(2))-%NormDay(group(3))"
+// MONTH-DAY-YEAR2:01-29-10 | 1-1-10
+expression="%MonthNumber-%DayNumber-%Year2Digit",val="UNDEF-centurygroup(3)-%NormMonth(group(1))-%NormDay(group(2))"
+// MONTH/DAY-YEAR4:09/26/1999 | 1/1/1999
+expression="%MonthNumber/%DayNumber/%Year4Digit",val="group(3)-%NormMonth(group(1))-%NormDay(group(2))"
+// MONTH-DAY-YEAR2:01/29/99 | 1/1/99
+expression="%MonthNumber/%DayNumber/%Year2Digit",val="UNDEF-centurygroup(3)-%NormMonth(group(1))-%NormDay(group(2))"
+
+//February 25, 2009 | February 25 , 2009 | February 25, 2009 | Feb. 25, 2009 | Feb. 25th, 2009 | Feb. 25, 2009, Monday
+expression="%MonthWord (%DayWord|%DayNumber)[ ]*, %Year4Digit(, %WeekDay)?",val="group(5)-%NormMonth(group(1))-%NormDay(group(2))"
+//25 February 2009 | 25 Feb. 2009 | 25 of February 2009 | 25 of Feb. 2009 | 25th of Feb. 2009
+expression="(%DayWord|%DayNumber) (of )?%MonthWord %Year4Digit",val="group(6)-%NormMonth(group(5))-%NormDay(group(1))"
+//November 19 | Nov 19 | January 19th | January nineteenth
+expression="%MonthWord (%DayWord|%DayNumber)",val="UNDEF-year-%NormMonth(group(1))-%NormDay(group(2))"
+//19 November | 19 Nov| 19th of November
+expression="(%DayWord|%DayNumber) (of )?%MonthWord",val="UNDEF-year-%NormMonth(group(5))-%NormDay(group(1))"
+
+// Friday October 13 2009 | Monday, October 12th 2009
+expression="%WeekDay[ ]*[,]? %MonthWord (%DayWord|%DayNumber) %Year4Digit",val="g-%NormMonth(group(2))-%NormDay(group(3))"
+// Friday October 13 | Monday, Oct 12 | Monday , Oct 12
+expression="%WeekDay[ ]*[,]? %MonthWord (%DayWord|%DayNumber)",val="UNDEF-year-%NormMonth(group(2))-%NormDay(group(3))"
+
+// tomorrow | yesterday | currently
+expression="%DayAroundToday",val="%NormAroundDay(group(0))"
+// early tomorrow
+expression="%Modifier %DayAroundToday",val="%NormAroundDay(group(2))",mod="%NormMod(group(1))"
+
+
